@@ -233,21 +233,25 @@ Assistant:"""
 # 4. STREAMLIT USER INTERFACE
 # -----------------------------------------------------------------------------
 
+# Load credentials securely in the background
+api_key = os.getenv("MONDAY_API_KEY", "")
+deals_id = os.getenv("DEALS_BOARD_ID", "")
+wo_id = os.getenv("WORK_ORDERS_BOARD_ID", "")
+gemini_key = os.getenv("GEMINI_API_KEY", "")
+
 with st.sidebar:
-  st.header("⚙️ Configuration & Sync")
+  st.header("⚡ Leadership Actions")
 
-  api_key = st.text_input("Monday.com API Token", value=os.getenv("MONDAY_API_KEY", ""), type="password")
-  deals_id = st.text_input("Deals Board ID", value=os.getenv("DEALS_BOARD_ID", ""))
-  wo_id = st.text_input("Work Orders Board ID", value=os.getenv("WORK_ORDERS_BOARD_ID", ""))
-  gemini_key = st.text_input("Gemini API Key", value=os.getenv("GEMINI_API_KEY", ""), type="password")
-
-  refresh_btn = st.button("🔄 Sync Live Monday.com Data")
+  refresh_btn = st.button("🔄 Sync Live Monday.com Data", use_container_width=True)
 
   st.markdown("---")
-  st.markdown("### ⚡ Quick Leadership Queries")
-  q_pipeline = st.button("📊 Energy Pipeline Health")
-  q_exec_summary = st.button("📑 Generate Leadership Update")
-  q_revenue_leakage = st.button("⚠️ Unbilled Work Orders & AR Risks")
+  st.markdown("### 📊 Quick Query Presets")
+  q_pipeline = st.button("📈 Energy Pipeline Health", use_container_width=True)
+  q_exec_summary = st.button("📑 Leadership Briefing", use_container_width=True)
+  q_revenue_leakage = st.button("⚠️ Unbilled Work Orders & AR Risk", use_container_width=True)
+
+  st.markdown("---")
+  st.caption("🔒 Connected via Secure Backend Secrets")
 
 if "deals_df" not in st.session_state or refresh_btn:
   if api_key and deals_id and wo_id:
@@ -262,7 +266,7 @@ if "deals_df" not in st.session_state or refresh_btn:
       except Exception as e:
         st.sidebar.error(f"Error fetching data: {str(e)}")
   else:
-    st.sidebar.warning("Please provide your Monday API Key and Board IDs.")
+    st.sidebar.warning("Please ensure your `.env` file contains the Monday API Key and Board IDs.")
 
 st.title("🦅 Skylark Drones - Monday.com BI Agent")
 st.caption("Conversational Executive Assistant & Cross-Board Analytics for Founders")
@@ -284,7 +288,7 @@ def process_user_query(user_prompt: str):
 
   if "deals_df" not in st.session_state or st.session_state.deals_df is None or not gemini_key:
     with st.chat_message("assistant"):
-      st.error("Please verify Monday.com data is synced and your Gemini API Key is configured in the sidebar.")
+      st.error("Please verify Monday.com data is synced and your Gemini API Key is configured in your `.env` file.")
     return
 
   with st.chat_message("assistant"):
